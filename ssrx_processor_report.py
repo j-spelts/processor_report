@@ -1,26 +1,25 @@
 import os 
-# import csv
-# from openpyxl import Workbook
+import csv
+import datetime
+from openpyxl import Workbook
 
 class ProcessorReportGenerator():
 
 	def main(self,args=None):
 		pass
 
-	PROCESSORS = ('provider pay', 'inmar')
-
-	DSN = 'SSRXDEVIQ1'
+	processors = ('provider pay', 'inmar')
 
 	# run sql and output to a csv
 	def runSQL(self):
-
-		for processor in self.PROCESSORS:
-			SQL = 'call ssrx.ssrx_835_report(' + processor + ')'
-			os.system('dbisql -c ' + DSN + ' -nogui "' + SQL + '" output to ~ quote '' delimited by '','';')
-
-			print ('run sql for ' + processor)
-
-		# os.system('echo SQL has succesfully run')
+		dsn = '$LOCALIQDB' 
+		now = datetime.datetime.now()
+		date = now.strftime('%Y-%m-%d')
+		for processor_name in self.processors:
+			sql = 'call ssrx.ssrx_835_report(' + processor_name + ')'
+			output_file = 'processor_835_extract_' + date + '_' + processor_name + '.csv'
+			os.system('dbisql -c ' + dsn + ' -nogui "' + sql + '" output to ' + output_file + 'quote '' delimited by '','';')
+		os.system('echo SQL has succesfully run')
 
 	# convert csv file to .xls
 	# def fileConversionXLS():
@@ -28,6 +27,5 @@ class ProcessorReportGenerator():
 def main(args=None):
 	processor = ProcessorReportGenerator()
 	processor.runSQL()
-
 
 if __name__ == '__main__': main()
